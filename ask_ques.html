@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ask Questions</title>
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      href="./assets/icon/web_icon.png"
+      type="image/x-icon"
+    />
+    <!-- Bootsrtap Icons CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <!-- Bootstrap version 5.3.2 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <!-- Quill TExt Editor cdn-->
+    <link
+      href="https://cdn.quilljs.com/1.1.6/quill.snow.css"
+      rel="stylesheet"
+    />
+
+    <!-- External Css -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <nav class="navbar fixed bg-dark fixed-top" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
+        </a>
+
+        <a href="./index.html" class="btn btn-outline-success ms-auto mx-1"
+          >Home</a
+        >
+        <div class="action">
+          <div class="profile border" onclick="menuToggle();">
+            <img id="profile" />
+          </div>
+          <div class="menu">
+            <h3 id="emailText"></h3>
+            <ul>
+              <li>
+                <a href="#" id="logoutBtn"
+                  ><i class="bi bi-box-arrow-right"></i>Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main -->
+    <main>
+      <div class="spinner-container">
+        <div class="spinner-grow text-danger" role="status" id="upload-spinner">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <form action="" id="q-form">
+        <div class="container col-sm-12 col-md-8 my-5">
+          <div class="row gap-4">
+            <div class="col-12 mt-5">
+              <h1>Create Blog or Ask Question</h1>
+              <hr />
+            </div>
+            <div class="col-lg-5 col-12">
+              <div>
+                <h3>Title</h3>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Enter a Good Title"
+                  id="title"
+                  required
+                />
+              </div>
+            </div>
+            <div class="col-lg-5 col-12">
+              <div>
+                <h3>Select Catagory</h3>
+                <select
+                  class="form-select"
+                  aria-label="Default select example"
+                  id="catagory"
+                  required
+                >
+                  <option selected>Select Category</option>
+                  <option value="Html">Html</option>
+                  <option value="Css">Css</option>
+                  <option value="JavaScript">JavaScript</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-5">
+              <div>
+                <h3>Select Type</h3>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="postType"
+                    id="blog"
+                    value="blog"
+                  />
+                  <label class="form-check-label" for="blog">Blog</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="postType"
+                    id="question"
+                    value="question"
+                  />
+                  <label class="form-check-label" for="question"
+                    >Question</label
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-5">
+              <div>
+                <h3>Select Status</h3>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="status"
+                    id="active"
+                    value="active"
+                  />
+                  <label class="form-check-label" for="active">Active</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="status"
+                    id="inactive"
+                    value="inactive"
+                  />
+                  <label class="form-check-label" for="inactive"
+                    >In Active</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- </div>   
+      <div class="container col-sm-12 col-md-8 my-5">   -->
+            <div class="col">
+              <h1>Description</h1>
+            </div>
+            <!-- Quill Text Editor -->
+            <div class="col-12">
+              <div id="editor-container" style="height: 400px"></div>
+              <input
+                type="hidden"
+                id="description"
+                name="description"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="container col-sm-12 col-md-8">
+        <a class="btn btn-primary my-3" href="./index.html">Cancel</a>
+        <button class="btn btn-primary my-3" type="submit" id="upload">
+          Save
+        </button>
+      </div>
+    </main>
+    <footer class="footer bg-dark text-light">
+      <div class="container text-center">
+        <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
+      </div>
+    </footer>
+    <!-- Quill Text Editor -->
+    <script src="https://cdn.quilljs.com/1.1.6/quill.js"></script>
+    <!-- Quil Text editor script -->
+    <script>
+      var quill = new Quill("#editor-container", {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, 3, false] }, { font: [] }],
+            [{ color: [] }, { background: [] }],
+            ["bold", "italic", "underline", "strike"],
+            ["code-block", "blockquote"],
+            ["link", "image"],
+            [{ align: [] }],
+          ],
+        },
+        placeholder: "Write Your Question Here...",
+        theme: "snow", // or 'bubble'
+      });
+      quill.on("text-change", function () {
+        document.getElementById("description").value = quill.root.innerHTML;
+      });
+    </script>
+    <script type="module" src="./js/firebase.js"></script>
+    <!-- Bootstrap version 5.3.2-->
+    <script src="./js/app.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        update,
+      } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        getDoc,
+        doc,
+        addDoc,
+        orderBy,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js"; 
+      // Change This With Your Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDlCgEF7mcwFOj9b0LmHyYrIe2ETYZIkyw",
+        authDomain: "ask-dev-online.firebaseapp.com",
+        databaseURL: "https://ask-dev-online-default-rtdb.firebaseio.com",
+        projectId: "ask-dev-online",
+        storageBucket: "ask-dev-online.appspot.com",
+        messagingSenderId: "711656091741",
+        appId: "1:711656091741:web:04a7c2a8f9e303d4d71db4",
+        measurementId: "G-EF67XQD0QH",
+      };
+      // Initializing Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const db = getFirestore(app);
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const upload = document.getElementById("upload");
+      // Getting Data In firStore
+      const addDataInFirestore = async () => {
+        try {
+          // Show the spinner
+          const spinnerContainer = document.querySelector(".spinner-container");
+          spinnerContainer.classList.add("show");
+
+          const title = document.getElementById("title").value.trim();
+          const descriptions = document
+            .getElementById("description")
+            .value.trim();
+          const type = getType();
+          const category = getQategory();
+          const status = getStatus();
+          // Perform validation
+          if (!title || !descriptions || !type || !category || !status) {
+            // Display an error message or highlight the required fields
+            alert("Please fill in all required fields.");
+            // Hide the spinner
+            spinnerContainer.classList.remove("show");
+            return;
+          }
+
+          const description = document.getElementById("description").value;
+          const { imageSrc, cleanDescription } =
+            separateImageFromDescription(description);
+          const user = auth.currentUser;
+          const name = user.displayName;
+
+          const imageUrl = imageSrc;
+          const docRef = await addDoc(collection(db, "posts"), {
+            email: user.email,
+            username: name,
+            title: document.getElementById("title").value,
+            qategory: getQategory(),
+            type: getType(),
+            status: getStatus(),
+            description: cleanDescription,
+            image: imageUrl,
+            timestamp: serverTimestamp(),
+            profile: user.photoURL,
+            replies: [],
+          });
+
+          // Hide the spinner after successful upload
+          spinnerContainer.classList.remove("show");
+
+          const postId = docRef.id;
+          window.location.href = `index.html?id=${postId}`;
+        } catch (e) {
+          console.error("Error adding document: ", e);
+
+          // Hide the spinner in case of an error
+          const spinnerContainer = document.querySelector(".spinner-container");
+          spinnerContainer.classList.remove("show");
+        }
+      };
+      // For Date and Time
+      function formatDateTime(timestamp) {
+        const options = {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hour12: true,
+        };
+        return new Intl.DateTimeFormat("en-US", options).format(timestamp);
+      }
+      // Seperating Image&Description from Quill Editor
+      function separateImageFromDescription(htmlContent) {
+        // Regular expression to match image tags in HTML
+        const imgRegex = /<img[^>]+src=['"]([^'"]+)['"][^>]*>/g;
+        // Find all image tags in the HTML content
+        const matches = htmlContent.match(imgRegex);
+        // Initialize variables for description and image source
+        let cleanDescription = htmlContent;
+        let imageSrc = null;
+        if (matches && matches.length > 0) {
+          // Extract the source (URL) from the first image tag
+          const imageData = matches[0].match(/src=['"]([^'"]+)['"]/);
+          if (imageData && imageData.length > 1) {
+            // Set the image source and update the description
+            imageSrc = imageData[1];
+            cleanDescription = htmlContent.replace(matches[0], ""); // Remove the image tag from the description
+          }
+        }
+
+        // Return an object with separated description and image source
+        return { cleanDescription, imageSrc };
+      }
+      const getStatus = () => {
+        const statusRadio = document.querySelector(
+          'input[name="status"]:checked'
+        );
+        return statusRadio ? statusRadio.value : "";
+      };
+      const getType = () => {
+        const typebtn = document.querySelector(
+          'input[name="postType"]:checked'
+        );
+        return typebtn ? typebtn.value : "";
+      };
+      const getQategory = () => {
+        const qategorySelect = document.getElementById("catagory");
+        return qategorySelect ? qategorySelect.value : "";
+      };
+      upload && upload.addEventListener("click", addDataInFirestore);
+    </script>
+  </body>
+</html>

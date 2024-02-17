@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Questions</title>
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      href="./assets/icon/web_icon.png"
+      type="image/x-icon"
+    />
+    <!-- Bootstrap version 5.3.2 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <!-- Bootsrtap Icons CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <!-- External Css -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <nav class="navbar fixed bg-dark fixed-top" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
+        </a>
+
+        <a href="./ask_ques.html" class="btn btn-outline-success ms-auto mx-1"
+          >Ask Question</a
+        >
+        <div class="action">
+          <div class="profile border" onclick="menuToggle();">
+            <img id="profile" />
+          </div>
+          <div class="menu">
+            <h3 id="emailText"></h3>
+            <ul>
+              <li>
+                <a href="#" id="logoutBtn"
+                  ><i class="bi bi-box-arrow-right"></i>Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main -->
+    <main>
+      <div class="container col-sm-12 col-md-8 my-5" id="detailed_question">
+        <!-- Inside your detailed_question element -->
+        <div id="repliesContainer" class="col-12 mt-3"></div>
+      </div>
+    </main>
+    <footer class="footer bg-dark text-light">
+      <div class="container text-center">
+        <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
+      </div>
+    </footer>
+    <!-- External Javascript  -->
+    <script type="module" src="./js/firebase.js"></script>
+    <script src="./js/app.js"></script>
+    <script type="module">
+      // Importing All Dependencies From FireBAse
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        update,
+      } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        getDoc,
+        doc,
+        addDoc,
+        orderBy,
+        updateDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+      const firebaseConfig = {
+        apiKey: "AIzaSyDlCgEF7mcwFOj9b0LmHyYrIe2ETYZIkyw",
+        authDomain: "ask-dev-online.firebaseapp.com",
+        databaseURL: "https://ask-dev-online-default-rtdb.firebaseio.com",
+        projectId: "ask-dev-online",
+        storageBucket: "ask-dev-online.appspot.com",
+        messagingSenderId: "711656091741",
+        appId: "1:711656091741:web:04a7c2a8f9e303d4d71db4",
+        measurementId: "G-EF67XQD0QH",
+      };
+      // Initializing Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const db = getFirestore(app);
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const emailText = document.getElementById("emailText");
+      const profile = document.getElementById("profile");
+      // Getting Data In firStore
+      const addDataInFirestore = async () => {
+        try {
+          // Show the spinner
+          const spinnerContainer = document.querySelector(".spinner-container");
+          spinnerContainer.classList.add("show");
+
+          const title = document.getElementById("title").value.trim();
+          const descriptions = document
+            .getElementById("description")
+            .value.trim();
+          const type = getType();
+          const category = getQategory();
+          const status = getStatus();
+          // Perform validation
+          if (!title || !descriptions || !type || !category || !status) {
+            // Display an error message or highlight the required fields
+            alert("Please fill in all required fields.");
+            // Hide the spinner
+            spinnerContainer.classList.remove("show");
+            return;
+          }
+
+          const description = document.getElementById("description").value;
+          const { imageSrc, cleanDescription } =
+            separateImageFromDescription(description);
+          const user = auth.currentUser;
+          const name = user.displayName;
+
+          const imageUrl = imageSrc;
+          const docRef = await addDoc(collection(db, "posts"), {
+            email: user.email,
+            username: name,
+            title: document.getElementById("title").value,
+            qategory: getQategory(),
+            type: getType(),
+            status: getStatus(),
+            description: cleanDescription,
+            image: imageUrl,
+            timestamp: serverTimestamp(),
+            profile: user.photoURL,
+            reply: [],
+          });
+
+          // Hide the spinner after successful upload
+          spinnerContainer.classList.remove("show");
+
+          const postId = docRef.id;
+          window.location.href = `index.html?id=${postId}`;
+        } catch (e) {
+          console.error("Error adding document: ", e);
+
+          // Hide the spinner in case of an error
+          const spinnerContainer = document.querySelector(".spinner-container");
+          spinnerContainer.classList.remove("show");
+        }
+      };
+      // For Displaying Full Post
+      const displayFullPost = async () => {
+        const postId = new URLSearchParams(window.location.search).get(
+          "postId"
+        );
+        // Retrieve the post details using the postId
+        try {
+          const postDoc = await getDoc(doc(db, "posts", postId));
+          const postData = postDoc.data();
+
+          const detailedQuestionContainer =
+            document.getElementById("detailed_question");
+          detailedQuestionContainer.innerHTML = ""; // Clear previous content
+
+          // Create a wrapper div for the detailed post
+          const postWrapper = document.createElement("div");
+          postWrapper.classList.add("row", "gap-4");
+
+          // Title section
+          const titleSection = document.createElement("div");
+          titleSection.classList.add("col", "mb-1");
+          titleSection.innerHTML = `<h3>${postData.title}</h3><hr>`;
+          postWrapper.appendChild(titleSection);
+
+          // Posted by and timestamp section
+          const metadataSection = document.createElement("div");
+          metadataSection.classList.add("row", "text-muted", "mb-3");
+          metadataSection.innerHTML = `
+        <div class="col-12 col-md-6">
+         <img src="${
+           postData.profile || "assets/images/profile-dummy.avif"
+         }" height="30px" width="30px" class"rounded-full"> <a href="#">${
+            postData.username || postData.email
+          }</a>
+        </div>
+        <div class="col-12 col-md-5">${formatDateTime(
+          postData.timestamp.toDate()
+        )}</div>
+        <div class="col-12">
+        <div class="col-5">${postData.status}</div>
+        <div class="col-5">${postData.type}</div>
+        </div>
+        <div class="col-12 mt-2"><p class="text-center"><strong>Description</strong>${
+          postData.description
+        }</p></div>
+        <div class="col-12"><img src="${
+          postData.image || "assets/images/image-skeleton.jpg"
+        }" height="250px" width="250"></div>
+        <div class="col-12">
+
+        <form  class="form-floating my-3" id="postReplies">
+        <textarea class="form-control"  id="replyText" placeholder="Leave a comment here" style="height: 50px"></textarea>
+         <label for="floatingTextarea2">Comments</label>
+          <button type="submit" class="btn btn-primary my-2">Comment</button>
+        </form>
+      </div>`;
+          postWrapper.appendChild(metadataSection);
+
+          detailedQuestionContainer.appendChild(postWrapper);
+        } catch (error) {
+          console.error("Error displaying full post: ", error);
+        }
+      };
+      // For Date and Time
+      function formatDateTime(timestamp) {
+        const options = {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hour12: true,
+        };
+
+        return new Intl.DateTimeFormat("en-US", options).format(timestamp);
+      }
+      // Seperating Image&Description from Quill Editor
+      function separateImageFromDescription(htmlContent) {
+        // Regular expression to match image tags in HTML
+        const imgRegex = /<img[^>]+src=['"]([^'"]+)['"][^>]*>/g;
+        // Find all image tags in the HTML content
+        const matches = htmlContent.match(imgRegex);
+        // Initialize variables for description and image source
+        let cleanDescription = htmlContent;
+        let imageSrc = null;
+
+        if (matches && matches.length > 0) {
+          // Extract the source (URL) from the first image tag
+          const imageData = matches[0].match(/src=['"]([^'"]+)['"]/);
+
+          if (imageData && imageData.length > 1) {
+            // Set the image source and update the description
+            imageSrc = imageData[1];
+            cleanDescription = htmlContent.replace(matches[0], ""); // Remove the image tag from the description
+          }
+        }
+
+        // Return an object with separated description and image source
+        return { cleanDescription, imageSrc };
+      }
+      displayFullPost();
+    </script>
+    <!-- Bootstrap version 5.3.2-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

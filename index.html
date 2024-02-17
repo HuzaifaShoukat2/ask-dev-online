@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home Page</title>
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      href="./assets/icon/web_icon.png"
+      type="image/x-icon"
+    />
+    <!-- Bootstrap version 5.3.2 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <!-- External Css -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <nav class="navbar fixed bg-dark  fixed-top"  data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
+        </a>
+
+        <a href="./ask_ques.html" class="btn btn-outline-success ms-auto mx-1"
+          >Ask Question</a
+        >
+        <div class="action">
+          <div class="profile border" onclick="menuToggle();">
+            <img id="profile" />
+          </div>
+          <div class="menu">
+            <h3 id="emailText"></h3>
+            <ul>
+              <li>
+                <a href="#" id="logoutBtn"
+                  ><i class="bi bi-box-arrow-right"></i>Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main -->
+    <main>
+      <div id="newData" class="container mt-5">
+        <!-- Data will be displayed here -->
+      </div>     
+    </main>
+    <footer class="footer bg-dark text-light">
+      <div class="container text-center">
+        <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
+      </div>
+    </footer>
+    <script type="module" src="./js/firebase.js"></script>
+    <script src="./js/app.js"></script>
+    <script type="module">
+      // Importing All Dependencies From FireBAse
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  update,
+} from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+import {
+  getFirestore, collection, getDocs, getDoc, doc, addDoc, orderBy,
+  serverTimestamp,
+} from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+// Change This With Your Firebase Configuration  
+const firebaseConfig = {
+  apiKey: "AIzaSyDlCgEF7mcwFOj9b0LmHyYrIe2ETYZIkyw",
+  authDomain: "ask-dev-online.firebaseapp.com",
+  databaseURL: "https://ask-dev-online-default-rtdb.firebaseio.com",
+  projectId: "ask-dev-online",
+  storageBucket: "ask-dev-online.appspot.com",
+  messagingSenderId: "711656091741",
+  appId: "1:711656091741:web:04a7c2a8f9e303d4d71db4",
+  measurementId: "G-EF67XQD0QH",
+};
+// Initializing Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const db = getFirestore(app);
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
+const newDataContainer = document.getElementById("newData");
+// Desplaying All Post 
+const displayDataInContainer = async () => {
+  try {
+    // Query Firestore collection (replace "posts" with your actual collection name)
+    const querySnapshot = await getDocs(collection(db, "posts"), orderBy('timestamp', 'asc'));
+    newDataContainer.innerHTML = "";    
+    // Loop through the documents and append data to the container
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const postId = doc.id;
+      const truncatedDescription = data.description.split(' ').slice(0, 20).join(' ');
+      const postElement = document.createElement("div");
+      postElement.innerHTML = `
+       <div class="row container mb-3">
+      <div class=" border col-12 d-flex p-4">
+      <div class="col col-md-7">
+        <h5>${data.title}</h5>
+        <p><strong>${data.qategory}</strong><p>     
+        <p>${truncatedDescription}<a href="./question_detail.html?postId=${postId}">Read More</a></p>
+        </div>
+      <div class="col-md-4 d-none d-md-block">
+        <img src="${data.image || 'assets/images/image-skeleton.jpg'}" alt="" height="200px">
+      </div>
+    </div>
+    <div class="text-muted col-12 border p-2">
+    <p href="#"> <strong>Posted by:</strong> ${data.username || data.email}<br><strong>on:</strong>${formatDateTime(data.timestamp.toDate())}</p>  
+    </div> 
+  </div>
+      `;
+      newDataContainer.appendChild(postElement);
+    });
+  } catch (error) {
+    console.error("Error fetching data: ", error);
+  }
+};
+displayDataInContainer();
+
+function formatDateTime(timestamp) {
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true,
+  };
+
+  return new Intl.DateTimeFormat('en-US', options).format(timestamp);
+}
+
+    </script>
+    <!-- Bootstrap version 5.3.2-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
