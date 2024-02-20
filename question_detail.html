@@ -55,10 +55,32 @@
     </nav>
     <!-- Main -->
     <main>
-      <div class="container col-sm-12 col-md-8 my-5" id="detailed_question">
-        <!-- Inside your detailed_question element -->
-        <div id="repliesContainer" class="col-12 mt-3"></div>
+      <div class="spinner-container">
+        <div class="spinner-grow text-danger" role="status" id="upload-spinner">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
+      <div
+        class="container col-sm-12 col-md-8 my-5"
+        id="detailed_question"
+      ></div>
+      <!-- Inside your detailed_question element -->
+      <div class="col-12 mt-3 container" id="commentform">
+        <form class="form-floating" id="postRepliesForm">
+          <textarea
+            class="form-control"
+            id="replyText"
+            placeholder="Leave a comment here"
+            style="height: 50px"
+          ></textarea>
+          <label for="floatingTextarea2">Comments</label>
+          <button type="button" class="btn btn-primary my-2" id="addComment">
+            Comment
+          </button>
+        </form>
+      </div>
+
+      <div id="repliesContainer" class="col-12 mt-3 container"></div>
     </main>
     <footer class="footer bg-dark text-light">
       <div class="container text-center">
@@ -86,7 +108,6 @@
         signInWithPopup,
         signOut,
       } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
-
       import {
         getFirestore,
         collection,
@@ -116,63 +137,8 @@
       const provider = new GoogleAuthProvider();
       const emailText = document.getElementById("emailText");
       const profile = document.getElementById("profile");
-      // Getting Data In firStore
-      const addDataInFirestore = async () => {
-        try {
-          // Show the spinner
-          const spinnerContainer = document.querySelector(".spinner-container");
-          spinnerContainer.classList.add("show");
-
-          const title = document.getElementById("title").value.trim();
-          const descriptions = document
-            .getElementById("description")
-            .value.trim();
-          const type = getType();
-          const category = getQategory();
-          const status = getStatus();
-          // Perform validation
-          if (!title || !descriptions || !type || !category || !status) {
-            // Display an error message or highlight the required fields
-            alert("Please fill in all required fields.");
-            // Hide the spinner
-            spinnerContainer.classList.remove("show");
-            return;
-          }
-
-          const description = document.getElementById("description").value;
-          const { imageSrc, cleanDescription } =
-            separateImageFromDescription(description);
-          const user = auth.currentUser;
-          const name = user.displayName;
-
-          const imageUrl = imageSrc;
-          const docRef = await addDoc(collection(db, "posts"), {
-            email: user.email,
-            username: name,
-            title: document.getElementById("title").value,
-            qategory: getQategory(),
-            type: getType(),
-            status: getStatus(),
-            description: cleanDescription,
-            image: imageUrl,
-            timestamp: serverTimestamp(),
-            profile: user.photoURL,
-            reply: [],
-          });
-
-          // Hide the spinner after successful upload
-          spinnerContainer.classList.remove("show");
-
-          const postId = docRef.id;
-          window.location.href = `index.html?id=${postId}`;
-        } catch (e) {
-          console.error("Error adding document: ", e);
-
-          // Hide the spinner in case of an error
-          const spinnerContainer = document.querySelector(".spinner-container");
-          spinnerContainer.classList.remove("show");
-        }
-      };
+      const addcomment = document.getElementById("addComment");
+      const commentform = document.getElementById("commentform");
       // For Displaying Full Post
       const displayFullPost = async () => {
         const postId = new URLSearchParams(window.location.search).get(
@@ -182,7 +148,7 @@
         try {
           const postDoc = await getDoc(doc(db, "posts", postId));
           const postData = postDoc.data();
-
+          const timestamp = formatDateTime(postData.timestamp.toMillis());
           const detailedQuestionContainer =
             document.getElementById("detailed_question");
           detailedQuestionContainer.innerHTML = ""; // Clear previous content
@@ -204,13 +170,11 @@
         <div class="col-12 col-md-6">
          <img src="${
            postData.profile || "assets/images/profile-dummy.avif"
-         }" height="30px" width="30px" class"rounded-full"> <a href="#">${
+         }" height="30px" width="30px" class="rounded-circle"> <strong>${
             postData.username || postData.email
-          }</a>
+          }</strong>
         </div>
-        <div class="col-12 col-md-5">${formatDateTime(
-          postData.timestamp.toDate()
-        )}</div>
+        <div class="col-12 col-md-5">${timestamp}</div>
         <div class="col-12">
         <div class="col-5">${postData.status}</div>
         <div class="col-5">${postData.type}</div>
@@ -218,19 +182,53 @@
         <div class="col-12 mt-2"><p class="text-center"><strong>Description</strong>${
           postData.description
         }</p></div>
-        <div class="col-12"><img src="${
+        <div class="col-12 mb-2"><img src="${
           postData.image || "assets/images/image-skeleton.jpg"
-        }" height="250px" width="250"></div>
-        <div class="col-12">
-
-        <form  class="form-floating my-3" id="postReplies">
-        <textarea class="form-control"  id="replyText" placeholder="Leave a comment here" style="height: 50px"></textarea>
-         <label for="floatingTextarea2">Comments</label>
-          <button type="submit" class="btn btn-primary my-2">Comment</button>
-        </form>
-      </div>`;
+        }" height="250px" width="250" ></div>
+       <hr>
+`;
           postWrapper.appendChild(metadataSection);
+          postWrapper.appendChild(commentform);
+          const commentsSection = document.createElement("div");
+          commentsSection.classList.add("col", "mt-3", "border",  "p-5");
 
+          if (
+            postData.comments &&
+  postData.comments.commentText &&
+  postData.comments.commentText.length > 0
+          ) {
+            postData.comments.commentText.forEach((comment, index) => {
+              const commentDiv = document.createElement("div");
+              // const timeStampComment = formatDateTime(postData.comment.commentTimestamp[index].toMillis());
+              commentDiv.innerHTML = `
+              <div class="col-md-12">
+              <div class="media border p-2">
+										<img class="mr-3 rounded-circle" alt="Bootstrap Media Preview" src="${postData.comments.commentUserImage[index] || '/assets/images/profile-dummy.avif'}"  height="40px" width="40px" />
+										<div class="media-body">
+											<div class="row">
+											 <div class="col d-flex">
+											    <h5>${postData.comments.commentUsername[index] || postData.comments.commentEmail[index]}</h5>
+												<span>Timestamp</span>
+											 </div>
+											 <div class="col-4">
+											 <div class="pull-right reply">											 
+											<a href="#"><span><i class="fa fa-reply"></i> reply</span></a>
+											 
+											 </div>
+											 
+											 </div>
+                       <p> ${comment}</p>
+											</div>	
+                      </div>	
+											
+    `;
+              commentsSection.appendChild(commentDiv);
+            });
+
+            postWrapper.appendChild(commentsSection);
+          } else {
+            commentsSection.innerHTML = "<h2>No comments</h2>";
+          }
           detailedQuestionContainer.appendChild(postWrapper);
         } catch (error) {
           console.error("Error displaying full post: ", error);
@@ -238,17 +236,31 @@
       };
       // For Date and Time
       function formatDateTime(timestamp) {
-        const options = {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: true,
-        };
+        const now = new Date();
+        const postTime = timestamp; // Firestore server timestamp is already in Date format
+        const timeDifference = now - postTime;
 
-        return new Intl.DateTimeFormat("en-US", options).format(timestamp);
+        // Convert time difference to seconds, minutes, hours, days, months, years
+        const seconds = Math.floor(timeDifference / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const months = Math.floor(days / 30); // Approximate months as 30 days
+        const years = Math.floor(months / 12);
+
+        if (years > 0) {
+          return `${years} ${years === 1 ? "year" : "years"} ago`;
+        } else if (months > 0) {
+          return `${months} ${months === 1 ? "month" : "months"} ago`;
+        } else if (days > 0) {
+          return `${days} ${days === 1 ? "day" : "days"} ago`;
+        } else if (hours > 0) {
+          return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+        } else if (minutes > 0) {
+          return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+        } else {
+          return `${seconds} ${seconds === 1 ? "second" : "seconds"} ago`;
+        }
       }
       // Seperating Image&Description from Quill Editor
       function separateImageFromDescription(htmlContent) {
@@ -274,7 +286,81 @@
         // Return an object with separated description and image source
         return { cleanDescription, imageSrc };
       }
+
+      // Function to handle adding a comment
+      async function addCommentHandler() {
+        const postId = new URLSearchParams(window.location.search).get(
+          "postId"
+        );
+        const commentText = document.getElementById("replyText").value;
+        const spinnerContainer = document.querySelector(".spinner-container");
+
+        if (commentText.trim() !== "") {
+          try {
+            spinnerContainer.classList.add("show"); // Show the spinner while uploading
+
+            const postDoc = await getDoc(doc(db, "posts", postId));
+            const postData = postDoc.data();
+            const user = auth.currentUser;
+            const name = user.displayName;
+            const email = user.email;
+         
+            await updateDoc(doc(db, "posts", postId), {
+              comments: {
+                commentText: [
+                  ...(postData.comments.commentText || []),
+                  commentText,
+                ],
+                commentEmail: [
+                  ...(postData.comments.commentEmail || []),
+                  user.email,
+                ],
+                commentUsername: [
+                  ...(postData.comments.commentUsername || []),
+                  name,
+                ],
+                commentUserImage: [
+                  ...(postData.comments.commentUserImage || []),
+                  user.photoURL,
+                ],   
+
+              },
+            });
+
+            // Refresh the displayed post after adding a comment
+            displayFullPost();
+
+            // Clear the input text
+            document.getElementById("replyText").value = "";
+          } catch (error) {
+            console.error("Error adding comment: ", error);
+          } finally {
+            spinnerContainer.classList.remove("show"); // Hide the spinner after uploading
+          }
+        }
+      }
+
+      // Display spinner while loading
+      const spinnerContainer = document.querySelector(".spinner-container");
+      spinnerContainer.classList.add("show");
+
+      // Call your displayFullPost function
+      displayFullPost()
+        .then(() => {
+          // Hide the spinner after loading
+          spinnerContainer.classList.remove("show");
+        })
+        .catch((error) => {
+          console.error("Error displaying full post: ", error);
+          // Hide the spinner in case of an error
+          spinnerContainer.classList.remove("show");
+        });
+
+      // Add event listener to the addComment button
+      addcomment && addcomment.addEventListener("click", addCommentHandler);
+
       displayFullPost();
+      // addcomment && addcomment.addEventListener("click", addCommentHandler);
     </script>
     <!-- Bootstrap version 5.3.2-->
     <script

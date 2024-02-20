@@ -110,8 +110,10 @@ const displayDataInContainer = async () => {
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const postId = doc.id;
+      const timestamp = formatDateTime(data.timestamp.toMillis());
       const truncatedDescription = data.description.split(' ').slice(0, 20).join(' ');
       const postElement = document.createElement("div");
+
       postElement.innerHTML = `
        <div class="row container mb-3">
       <div class=" border col-12 d-flex p-4">
@@ -125,7 +127,7 @@ const displayDataInContainer = async () => {
       </div>
     </div>
     <div class="text-muted col-12 border p-2">
-    <p href="#"> <strong>Posted by:</strong> ${data.username || data.email}<br><strong>on:</strong>${formatDateTime(data.timestamp.toDate())}</p>  
+    <p href="#"> <strong>Posted by:</strong> ${data.username || data.email}<br><strong>on:</strong>${timestamp}</p>  
     </div> 
   </div>
       `;
@@ -136,19 +138,32 @@ const displayDataInContainer = async () => {
   }
 };
 displayDataInContainer();
-
 function formatDateTime(timestamp) {
-  const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    hour12: true,
-  };
+  const now = new Date();
+  const postTime = timestamp; // Firestore server timestamp is already in Date format
+  const timeDifference = now - postTime;
 
-  return new Intl.DateTimeFormat('en-US', options).format(timestamp);
+  // Convert time difference to seconds, minutes, hours, days, months, years
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30); // Approximate months as 30 days
+  const years = Math.floor(months / 12);
+
+  if (years > 0) {
+    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+  } else if (months > 0) {
+    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+  } else if (days > 0) {
+    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+  } else if (hours > 0) {
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+  } else if (minutes > 0) {
+    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+  } else {
+    return `${seconds} ${seconds === 1 ? 'second' : 'seconds'} ago`;
+  }
 }
 
     </script>
