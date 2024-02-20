@@ -310,19 +310,11 @@
               commentUsername:[],
               commentTimestamp:[],
               commentuserImage:[],
-              // replies:{
-              //   replyText:[],
-              // replyEmail:[],
-              // replyUsername:[],
-              // replyTimestamp:[],
-              // replierImage:[],
-              // }
             } ,
           });
 
           // Hide the spinner after successful upload
           spinnerContainer.classList.remove("show");
-
           const postId = docRef.id;
           window.location.href = `index.html?id=${postId}`;
         } catch (e) {
@@ -334,6 +326,7 @@
         }
       };
       // For Date and Time
+      
       function formatDateTime(timestamp) {
   const now = new Date();
   const postTime = timestamp; // Firestore server timestamp is already in Date format

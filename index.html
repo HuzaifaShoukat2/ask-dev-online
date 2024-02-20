@@ -43,15 +43,22 @@
                 >
               </li>
             </ul>
+            
           </div>
         </div>
       </div>
     </nav>
     <!-- Main -->
     <main>
+      <input type="text" id="searchInput" class="form-control me-2" placeholder="Search..." />
+<button class="btn btn-outline-success" id="search">Search</button>
+
       <div id="newData" class="container mt-5">
         <!-- Data will be displayed here -->
-      </div>     
+      </div>    
+      <div id="searchResults" class="container mt-5">
+        <!-- Filtered data will be displayed here -->
+      </div> 
     </main>
     <footer class="footer bg-dark text-light">
       <div class="container text-center">
@@ -100,11 +107,12 @@ const db = getFirestore(app);
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 const newDataContainer = document.getElementById("newData");
+const search = document.getElementById("search");
 // Desplaying All Post 
 const displayDataInContainer = async () => {
   try {
     // Query Firestore collection (replace "posts" with your actual collection name)
-    const querySnapshot = await getDocs(collection(db, "posts"), orderBy('timestamp', 'asc'));
+    const querySnapshot = await getDocs(collection(db, "posts"), orderBy('timestamp', 'desc'));
     newDataContainer.innerHTML = "";    
     // Loop through the documents and append data to the container
     querySnapshot.forEach((doc) => {
@@ -137,7 +145,72 @@ const displayDataInContainer = async () => {
     console.error("Error fetching data: ", error);
   }
 };
+const searchInput = document.getElementById("searchInput");
+  const searchResultsContainer = document.getElementById("searchResults");
+
+  // Function to filter and display data based on search input
+  const searchData = async () => {
+    const searchTerm = searchInput.value.toLowerCase();
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "posts"), orderBy('timestamp', 'desc'));
+      const filteredData = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const tags = data.tags || [];
+        const containsSearchTerm = data.title.toLowerCase().includes(searchTerm) ||
+                                   data.description.toLowerCase().includes(searchTerm) ||
+                                   tags.includes(searchTerm);
+
+        if (containsSearchTerm) {
+          filteredData.push({
+            postId: doc.id,
+            data: data
+          });
+        }
+      });
+
+      // Display filtered data
+      displayFilteredData(filteredData);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  // Function to display filtered data
+  const displayFilteredData = (filteredData) => {
+    searchResultsContainer.innerHTML = "";
+
+    filteredData.forEach(({ postId, data }) => {
+      const timestamp = formatDateTime(data.timestamp.toMillis());
+      const truncatedDescription = data.description.split(' ').slice(0, 20).join(' ');
+      const postElement = document.createElement("div");
+
+      postElement.innerHTML = `
+       <div class="row container mb-3">
+        <div class=" border col-12 d-flex p-4">
+          <div class="col col-md-7">
+            <h5>${data.title}</h5>
+            <p><strong>${data.qategory}</strong></p>
+            <p>${truncatedDescription}<a href="./question_detail.html?postId=${postId}">Read More</a></p>
+          </div>
+          <div class="col-md-4 d-none d-md-block">
+            <img src="${data.image || 'assets/images/image-skeleton.jpg'}" alt="" height="200px">
+          </div>
+        </div>
+        <div class="text-muted col-12 border p-2">
+          <p href="#"><strong>Posted by:</strong> ${data.username || data.email}<br><strong>on:</strong>${timestamp}</p>
+        </div>
+      </div>
+      `;
+      searchResultsContainer.appendChild(postElement);
+    });
+  };
+
+
 displayDataInContainer();
+search && search.addEventListener('click',  searchData());
 function formatDateTime(timestamp) {
   const now = new Date();
   const postTime = timestamp; // Firestore server timestamp is already in Date format

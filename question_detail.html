@@ -67,20 +67,22 @@
       <!-- Inside your detailed_question element -->
       <div class="col-12 mt-3 container" id="commentform">
         <form class="form-floating" id="postRepliesForm">
-          <textarea
+          <input
             class="form-control"
             id="replyText"
             placeholder="Leave a comment here"
             style="height: 50px"
-          ></textarea>
+          ></input>
           <label for="floatingTextarea2">Comments</label>
-          <button type="button" class="btn btn-primary my-2" id="addComment">
+          <a type="button" class="btn btn-primary my-2" id="addComment">
             Comment
-          </button>
+          </a>
         </form>
+        <h3 class="mt-3">Comments</h3>
       </div>
 
-      <div id="repliesContainer" class="col-12 mt-3 container"></div>
+      <div id="repliesContainer" class="col-12 mt-3 container">
+      </div>
     </main>
     <footer class="footer bg-dark text-light">
       <div class="container text-center">
@@ -167,19 +169,19 @@
           const metadataSection = document.createElement("div");
           metadataSection.classList.add("row", "text-muted", "mb-3");
           metadataSection.innerHTML = `
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6 d-flex">
          <img src="${
            postData.profile || "assets/images/profile-dummy.avif"
-         }" height="30px" width="30px" class="rounded-circle"> <strong>${
+         }" height="50px" width="50px" class="rounded-circle"> <h5 class="mt-3 ms-2">${
             postData.username || postData.email
-          }</strong>
+          }</h5>
         </div>
-        <div class="col-12 col-md-5">${timestamp}</div>
-        <div class="col-12">
-        <div class="col-5">${postData.status}</div>
-        <div class="col-5">${postData.type}</div>
+        <div class="col-12 col-md-5 text-muted mt-3">${timestamp}</div>
+        <div class="col-12 m-3">
+        <div class="col-5 text-uppercase">${postData.status}</div>
+        <div class="col-5 text-uppercase">${postData.type}</div>
         </div>
-        <div class="col-12 mt-2"><p class="text-center"><strong>Description</strong>${
+        <div class="col-12 mt-2"><p class="text-uppercase"><strong>Description</strong>${
           postData.description
         }</p></div>
         <div class="col-12 mb-2"><img src="${
@@ -190,7 +192,7 @@
           postWrapper.appendChild(metadataSection);
           postWrapper.appendChild(commentform);
           const commentsSection = document.createElement("div");
-          commentsSection.classList.add("col", "mt-3", "border",  "p-5");
+          commentsSection.classList.add("col", "mt-1",  "p-2");
 
           if (
             postData.comments &&
@@ -201,25 +203,36 @@
               const commentDiv = document.createElement("div");
               // const timeStampComment = formatDateTime(postData.comment.commentTimestamp[index].toMillis());
               commentDiv.innerHTML = `
-              <div class="col-md-12">
-              <div class="media border p-2">
-										<img class="mr-3 rounded-circle" alt="Bootstrap Media Preview" src="${postData.comments.commentUserImage[index] || '/assets/images/profile-dummy.avif'}"  height="40px" width="40px" />
-										<div class="media-body">
-											<div class="row">
-											 <div class="col d-flex">
-											    <h5>${postData.comments.commentUsername[index] || postData.comments.commentEmail[index]}</h5>
-												<span>Timestamp</span>
-											 </div>
-											 <div class="col-4">
-											 <div class="pull-right reply">											 
-											<a href="#"><span><i class="fa fa-reply"></i> reply</span></a>
-											 
-											 </div>
-											 
-											 </div>
-                       <p> ${comment}</p>
-											</div>	
-                      </div>	
+             
+
+          <div class=" text-dark">
+          <div class="row">
+            <div class="col-md-11 col-lg-9 col-xl-12">
+              <div class="d-flex flex-start mb-2">
+                <img class="rounded-circle shadow-1-strong me-1"
+                  src="${postData.comments.commentUserImage[index] || '/assets/images/profile-dummy.avif'}" alt="avatar" width="50"
+                  height="50" />
+                <div class="card w-100">
+                  <div class="card-body p-3">
+                    <div class="d-flex justify-content-between">
+                      <h5>${postData.comments.commentUsername[index] || postData.comments.commentEmail[index]}</h5>
+                      <p class="small text-muted">Just Now</p>
+                      </div>
+                      <p>
+                        ${comment}
+                      </p>
+                  </div>
+                </div>
+              </div>
+      
+            </div>
+          </div>
+          
+      
+            </div>
+          </div>
+        </div>
+        
 											
     `;
               commentsSection.appendChild(commentDiv);
