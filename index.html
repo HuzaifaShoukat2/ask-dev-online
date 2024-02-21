@@ -17,6 +17,10 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
     <!-- External Css -->
     <link rel="stylesheet" href="./style.css" />
   </head>
@@ -26,7 +30,16 @@
         <a class="navbar-brand" href="#">
           <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
         </a>
-
+        <div class="d-flex ms-auto">
+          <input
+          type="text"
+          class="form-control me-2"
+          id="searchInput"
+          placeholder="Search"
+          />
+          <a class="btn" id="search"><i class="bi bi-x"></i></a>
+        </div>
+        
         <a href="./ask_ques.html" class="btn btn-outline-success ms-auto mx-1"
           >Ask Question</a
         >
@@ -43,23 +56,21 @@
                 >
               </li>
             </ul>
-            
           </div>
         </div>
       </div>
     </nav>
     <!-- Main -->
     <main>
-      <input type="text" id="searchInput" class="form-control me-2" placeholder="Search..." />
-<button class="btn btn-outline-success" id="search">Search</button>
-
+      <div class="main-container">
+      <h1 id="matchesCount" style="display: none;" class="text-center mt-3">0 matches found</h1>
       <div id="newData" class="container mt-5">
-        <!-- Data will be displayed here -->
-      </div>    
-      <div id="searchResults" class="container mt-5">
-        <!-- Filtered data will be displayed here -->
+        <!-- Data will be displayed here -->     
       </div> 
+      <h1 id="noMatchMessage" class="text-center mt-3" style="display: none;">No match found.</h1>
+    </div>
     </main>
+
     <footer class="footer bg-dark text-light">
       <div class="container text-center">
         <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
@@ -124,18 +135,18 @@ const displayDataInContainer = async () => {
 
       postElement.innerHTML = `
        <div class="row container mb-3">
-      <div class=" border col-12 d-flex p-4">
-      <div class="col col-md-7">
-        <h5>${data.title}</h5>
-        <p><strong>${data.qategory}</strong><p>     
-        <p>${truncatedDescription}<a href="./question_detail.html?postId=${postId}">Read More</a></p>
+      <div class="border col-12 d-flex p-4 post">
+      <div class="col col-md-8">
+        <h3 class="text-capitalize post-title">${data.title}</h3>
+        <p class="text-muted post-type"><span class="text-uppercase">${data.type}</span> on ${data.qategory}<p>     
+        <p class="post-description">${truncatedDescription}<a href="./question_detail.html?postId=${postId}" class="text-decoration-none">Read More</a></p>
         </div>
-      <div class="col-md-4 d-none d-md-block">
+      <div class="col-md-4 d-none d-md-block post-img">
         <img src="${data.image || 'assets/images/image-skeleton.jpg'}" alt="" height="200px">
       </div>
     </div>
     <div class="text-muted col-12 border p-2">
-    <p href="#"> <strong>Posted by:</strong> ${data.username || data.email}<br><strong>on:</strong>${timestamp}</p>  
+    <p class="post-name"><strong>${data.username || data.email}</strong> <br> <span class="text-muted post-time">${timestamp}</span></p>  
     </div> 
   </div>
       `;
@@ -145,72 +156,65 @@ const displayDataInContainer = async () => {
     console.error("Error fetching data: ", error);
   }
 };
-const searchInput = document.getElementById("searchInput");
-  const searchResultsContainer = document.getElementById("searchResults");
-
-  // Function to filter and display data based on search input
-  const searchData = async () => {
-    const searchTerm = searchInput.value.toLowerCase();
-
-    try {
-      const querySnapshot = await getDocs(collection(db, "posts"), orderBy('timestamp', 'desc'));
-      const filteredData = [];
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const tags = data.tags || [];
-        const containsSearchTerm = data.title.toLowerCase().includes(searchTerm) ||
-                                   data.description.toLowerCase().includes(searchTerm) ||
-                                   tags.includes(searchTerm);
-
-        if (containsSearchTerm) {
-          filteredData.push({
-            postId: doc.id,
-            data: data
-          });
-        }
-      });
-
-      // Display filtered data
-      displayFilteredData(filteredData);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
-  // Function to display filtered data
-  const displayFilteredData = (filteredData) => {
-    searchResultsContainer.innerHTML = "";
-
-    filteredData.forEach(({ postId, data }) => {
-      const timestamp = formatDateTime(data.timestamp.toMillis());
-      const truncatedDescription = data.description.split(' ').slice(0, 20).join(' ');
-      const postElement = document.createElement("div");
-
-      postElement.innerHTML = `
-       <div class="row container mb-3">
-        <div class=" border col-12 d-flex p-4">
-          <div class="col col-md-7">
-            <h5>${data.title}</h5>
-            <p><strong>${data.qategory}</strong></p>
-            <p>${truncatedDescription}<a href="./question_detail.html?postId=${postId}">Read More</a></p>
-          </div>
-          <div class="col-md-4 d-none d-md-block">
-            <img src="${data.image || 'assets/images/image-skeleton.jpg'}" alt="" height="200px">
-          </div>
-        </div>
-        <div class="text-muted col-12 border p-2">
-          <p href="#"><strong>Posted by:</strong> ${data.username || data.email}<br><strong>on:</strong>${timestamp}</p>
-        </div>
-      </div>
-      `;
-      searchResultsContainer.appendChild(postElement);
-    });
-  };
-
-
 displayDataInContainer();
-search && search.addEventListener('click',  searchData());
+function updateMatchesCount(count) {
+    const matchesCount = document.getElementById("matchesCount");
+    matchesCount.innerText = `${count} match${count !== 1 ? 'es' : ''} found`;
+    matchesCount.style.display = count > 0 ? "block" : "none";
+  }
+  async function searchPosts() {
+   
+
+    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const allPostElements = document.querySelectorAll("#newData .container.mb-3");
+
+    let matchesCount = 0;
+
+    allPostElements.forEach((postElement) => {
+      const postText = postElement.innerText.toLowerCase();
+
+      // Show or hide posts based on search input
+      const isMatch = postText.includes(searchInput);
+      postElement.style.display = isMatch ? "block" : "none";
+
+      // Update the matches count
+      if (isMatch) {
+        matchesCount++;
+      }
+    });
+
+    // Show a message if no posts match the search
+    const noMatchMessage = document.getElementById("noMatchMessage");
+    noMatchMessage.style.display = matchesCount === 0 ? "block" : "none";
+
+    updateMatchesCount(matchesCount); // Update the matches count
+   
+  }
+  // Event listener for the search input (keyup event for real-time search)
+  const searchInput = document.getElementById("searchInput");
+  searchInput && searchInput.addEventListener("input", () => {
+    searchPosts();
+    });
+    function resetSearch() {
+        // Reset the display and content when the search input is empty
+        const allPostElements = document.querySelectorAll("#newData .container.mb-3");
+        allPostElements.forEach((postElement) => {
+          postElement.style.display = "block"; // Show all posts
+        });
+
+        const noMatchMessage = document.getElementById("noMatchMessage");
+        noMatchMessage.style.display = "none"; // Hide the "No match found" message
+
+        const matchesCount = document.getElementById("matchesCount");
+        matchesCount.style.display = "none"; // Hide the matches count message
+      }
+      // Event listener for the search button (clears the search input)
+      const clear = document.getElementById("search");
+      clear && clear.addEventListener("click", () => {
+        const searchInput = document.getElementById("searchInput");
+        searchInput.value = ""; // Clear the search input
+        resetSearch(); // Reset the display and content
+      });
 function formatDateTime(timestamp) {
   const now = new Date();
   const postTime = timestamp; // Firestore server timestamp is already in Date format
@@ -238,8 +242,7 @@ function formatDateTime(timestamp) {
     return `${seconds} ${seconds === 1 ? 'second' : 'seconds'} ago`;
   }
 }
-
-    </script>
+</script>
     <!-- Bootstrap version 5.3.2-->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
