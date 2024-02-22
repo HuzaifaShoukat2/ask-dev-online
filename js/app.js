@@ -1,7 +1,4 @@
-function menuToggle() {
-    const toggleMenu = document.querySelector(".menu");
-    toggleMenu.classList.toggle("active");
-  }
+
   
 document.addEventListener("DOMContentLoaded", function () {
   const switchSignin = document.querySelector(".switchSignin");
@@ -18,6 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   switchSignUp && switchSignUp.addEventListener("click", switchSignup);
   switchSignin && switchSignin.addEventListener("click", switchSigIn);
-});
 
   
+ 
+});
+
+function menuToggle() {
+  const toggleMenu = document.querySelector(".menu");
+  toggleMenu.classList.toggle("active");
+}

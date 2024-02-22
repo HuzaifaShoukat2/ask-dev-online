@@ -19,31 +19,16 @@ html {
 ::after {
   box-sizing: border-box;
 }
+main{
+  margin-top: 100px;
+}
 
-a {
-  text-decoration: none;
-  color: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-img {
-  max-width: 100%;
-  vertical-align: middle;
-}
-ul {
-  list-style: none;
-}
-p {
-  margin: 0 0 15px;
-}
+
 input,
 textarea,
 select {
   font: inherit;
   width: 100%;
-}
-input[type="checkbox"],
-input[type="radio"] {
-  width: auto;
 }
 input::placeholder,
 textarea::placeholder {
@@ -75,17 +60,20 @@ h3 {
 h4 {
   font-size: 1em;
 }
-
+/* navbar */
+nav{
+  background-color: 	#161616;
+}
 /* Index Page */
 .main-container{
 margin-top:100px;
 max-height:200vh;
 overflow-y:scroll;
 }
+
 ::-webkit-scrollbar {
   width: 12px;
 }
-
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
   border-radius: 10px;
@@ -111,26 +99,56 @@ overflow-y:scroll;
     display: block;
   }
 
-  
-  
-  button:hover {
-    transform: scale(1.02);
-  }
-  .input-container{
-    position: relative;     
-  }
-  #e7effd
-  .imgIcon{
+  .search-btn, .close-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 25px;
+    background-color:	#161616;
+    color:white;
+    border: none;
+    cursor: pointer;
     position: absolute;
-    top: 0;
-    right: 0;
+    transition: all 0.25s ease;
   }
   
-  /* .action {
-    position: fixed;
-    right: 30px;
-  } */
+  .close-btn {
+    color: rgb(255, 83, 26);
+    z-index: -1;
+  }
   
+  .search-box {
+    width: 40px;
+    height: 40px;
+    padding: 15px;
+    border-radius: 25px;
+    background-color: #6b6b6b;
+    color:white;
+    outline: none;
+    border: none;
+    transition: width 0.25s ease;
+  }
+  
+  .search {
+    display: flex;
+    align-items: center;
+  }
+  
+  .active .search-box {
+    width: 250px;
+  }
+  
+  .active .search-btn {
+    transform: translate(200px, 0px) scale(0.8);
+    background-color: transparent;
+    display: none;
+  }
+  
+  .active .close-btn {
+    z-index: 0;
+    transform: translate(200px, 0px);
+    background: transparent;
+  }
+ 
   .action .profile {
     position: relative;
     width: 50px;
@@ -152,9 +170,9 @@ overflow-y:scroll;
   .action .menu {
     position: absolute;
     top: 120px;
-    right: 20px;
+    right: 50px;
     padding: 10px 20px;
-    background: #ffffff;
+    background: black;
     width: 200px;
     box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
@@ -177,24 +195,22 @@ overflow-y:scroll;
     right: 28px;
     width: 20px;
     height: 20px;
-    background: #fff;
+    background: black;
     transform: rotate(45deg);
   }
   
   .action .menu h3 {
     width: 100%;
-    text-align: center;
     font-size: 12px;
-    padding: 5px 0;
     font-weight: 500;
-    color: #555;
+    color: white;
     line-height: 1.5em;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
   
   .action .menu h3 span {
     font-size: 14px;
-    color: #cecece;
+    color:white;
     font-weight: 300;
   }
   
@@ -224,9 +240,5 @@ overflow-y:scroll;
     transition: 0.5s;
   }
   .action .menu ul li:hover a {
-    color: #ff5d94;
+    color: #1a5702;
   }
-.form-box{
-  border:1px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
-}

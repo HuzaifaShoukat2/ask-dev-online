@@ -25,25 +25,23 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <nav class="navbar fixed bg-dark  fixed-top"  data-bs-theme="dark">
+    <nav class="navbar fixed fixed-top"  data-bs-theme="dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
           <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
         </a>
-        <div class="d-flex ms-auto">
-          <input
-          type="text"
-          class="form-control me-2"
-          id="searchInput"
-          placeholder="Search"
-          />
-          <a class="btn" id="search"><i class="bi bi-x"></i></a>
-        </div>
-        
+       
         <a href="./ask_ques.html" class="btn btn-outline-success ms-auto mx-1"
           >Ask Question</a
         >
-        <div class="action">
+       
+        <div class="search mx-3">
+          <input type="text" class="search-box" placeholder="Search..." id="searchInput">
+          <button class="search-btn"><i  class="bi bi-search"></i></button>
+          <button class="close-btn"  id="search"><i class="bi bi-x"></i></button>
+        </div>
+       
+        <div class="action me-5">
           <div class="profile border" onclick="menuToggle();">
             <img id="profile" />
           </div>
@@ -63,15 +61,15 @@
     <!-- Main -->
     <main>
       <div class="main-container">
-      <h1 id="matchesCount" style="display: none;" class="text-center mt-3">0 matches found</h1>
+      <h3 id="matchesCount" style="display: none;" class="text-center mt-3">0 matches found</h3>
       <div id="newData" class="container mt-5">
         <!-- Data will be displayed here -->     
       </div> 
-      <h1 id="noMatchMessage" class="text-center mt-3" style="display: none;">No match found.</h1>
+      <h3 id="noMatchMessage" class="text-center mt-3" style="display: none;">No match found.</h3>
     </div>
     </main>
 
-    <footer class="footer bg-dark text-light">
+    <footer class="footer">
       <div class="container text-center">
         <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
       </div>
@@ -138,8 +136,9 @@ const displayDataInContainer = async () => {
       <div class="border col-12 d-flex p-4 post">
       <div class="col col-md-8">
         <h3 class="text-capitalize post-title">${data.title}</h3>
-        <p class="text-muted post-type"><span class="text-uppercase">${data.type}</span> on ${data.qategory}<p>     
-        <p class="post-description">${truncatedDescription}<a href="./question_detail.html?postId=${postId}" class="text-decoration-none">Read More</a></p>
+        <p class="text-muted post-type"><span class="text-capitalize">${data.type}</span> About ${data.qategory}<p> 
+          <p><strong class="text-capitalize">${data.status}</strong></p>    
+        <p class="post-description">${truncatedDescription}<a href="./question_detail.html?postId=${postId}">Read More</a></p>
         </div>
       <div class="col-md-4 d-none d-md-block post-img">
         <img src="${data.image || 'assets/images/image-skeleton.jpg'}" alt="" height="200px">
@@ -242,6 +241,31 @@ function formatDateTime(timestamp) {
     return `${seconds} ${seconds === 1 ? 'second' : 'seconds'} ago`;
   }
 }
+
+
+</script>
+<script>
+  const searchBox = document.querySelector('.search-box');
+  const searchBtn = document.querySelector('.search-btn');
+  const searchs = document.querySelector('.search');
+  const closeBtn = document.querySelector('.close-btn');
+  
+  searchBtn.addEventListener("click", function(){
+    console.log(searchs.classList.contains('active'));
+    if(searchs.classList.contains('active')){
+      searchBox.value = ''
+    }
+    else {
+      searchs.classList.add('active');
+      searchBox.focus();
+    }
+  })
+  
+  closeBtn.addEventListener('click', function(){
+    searchs.classList.remove('active');
+    searchBox.value = '';
+  })
+
 </script>
     <!-- Bootstrap version 5.3.2-->
     <script

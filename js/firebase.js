@@ -56,8 +56,8 @@ const onLoad = () => {
       }
     } else if (!user && !isSignInPage) {
       // Redirect to the sign-in page if the user is not logged in and not on the sign-in page
-      alert('SignIn First To Continue:');
       window.location.href = 'sign_in.html';
+      alert('Sign In First To Continue:');
     }
   });
 };
