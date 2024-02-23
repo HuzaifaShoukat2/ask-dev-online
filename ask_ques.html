@@ -44,7 +44,7 @@
           <a class="btn btn-outline-success mx-2  homeBtn " href="./index.html">Home</a>
           <a class="btn btn-outline-success me-2 signinBtn" href="./sign_in.html">Sign In</a>          
         </div>
-        <div class="action me-3 d-none profileMenu">
+        <div class="action me-1 d-none profileMenu">
         <div class="profile border" onclick="menuToggle();">
               <img id="profile" />
             </div>
@@ -71,7 +71,7 @@
       </div>
 <!-- Question Form -->
       <form action="" id="q-form">
-        <div class="container col-sm-12 col-md-8 my-5">
+        <div class="container col-sm-12 col-md-8 mt-5">
           <div class="row gap-4">
             <div class="col-12 mt-5">
               <h1>Create Blog or Ask Question</h1>
@@ -91,17 +91,18 @@
             </div>
             <div class="col-lg-5 col-12">
               <div>
-                <h3>Select Catagory</h3>
+                <h3>Select Category</h3>
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   id="catagory"
                   required
                 >
-                  <option selected>Select Category</option>
+                  <option selected disabled>Select Category</option>
                   <option value="Html">Html</option>
                   <option value="Css">Css</option>
                   <option value="JavaScript">JavaScript</option>
+                  <option value="React Js">React Js</option>
                 </select>
               </div>
             </div>
@@ -141,7 +142,7 @@
                     type="radio"
                     name="status"
                     id="active"
-                    value="active"
+                    value="Active"
                   />
                   <label class="form-check-label" for="active">Active</label>
                 </div>
@@ -150,7 +151,7 @@
                     class="form-check-input"
                     type="radio"
                     name="status"
-                    id="inactive"
+                    id="InActive"
                     value="inactive"
                   />
                   <label class="form-check-label" for="inactive"
