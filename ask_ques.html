@@ -27,46 +27,49 @@
       href="https://cdn.quilljs.com/1.1.6/quill.snow.css"
       rel="stylesheet"
     />
-
     <!-- External Css -->
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <!-- Header -->
-    <nav class="navbar fixed fixed-top" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg fixed-top" >
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
-        </a>
-
-        <a href="./index.html" class="btn btn-outline-success ms-auto mx-1"
-          >Home</a
-        >
-        <div class="action  me-5">
-          <div class="profile border" onclick="menuToggle();">
-            <img id="profile" />
-          </div>
-          <div class="menu">
-            <h3 id="emailText"></h3>
-            <ul>
-              <li>
-                <a href="#" id="logoutBtn"
-                  ><i class="bi bi-box-arrow-right"></i>Logout</a
-                >
-              </li>
-            </ul>
-          </div>
+        <a class="navbar-brand">
+          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" /> Ask Devs</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+          <!-- <a class="btn btn-outline-success ms-2 " href="./ask_ques.html">Ask Question</a> -->
+          <a class="btn btn-outline-success mx-2  homeBtn " href="./index.html">Home</a>
+          <a class="btn btn-outline-success me-2 signinBtn" href="./sign_in.html">Sign In</a>          
         </div>
+        <div class="action me-3 d-none profileMenu">
+        <div class="profile border" onclick="menuToggle();">
+              <img id="profile" />
+            </div>
+            <div class="menu">
+              <h3 id="emailText"></h3>
+              <ul>
+                <li>
+                  <a href="#" id="logoutBtn"
+                    ><i class="bi bi-box-arrow-right"></i>Logout</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
       </div>
     </nav>
     <!-- Main -->
     <main>
+      <!-- Spinner -->
       <div class="spinner-container">
         <div class="spinner-grow text-danger" role="status" id="upload-spinner">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-
+<!-- Question Form -->
       <form action="" id="q-form">
         <div class="container col-sm-12 col-md-8 my-5">
           <div class="row gap-4">
@@ -176,13 +179,14 @@
         </div>
       </form>
       <div class="container col-sm-12 col-md-8">
-        <a class="btn btn-primary my-3" href="./index.html">Cancel</a>
-        <button class="btn btn-primary my-3" type="submit" id="upload">
+        <a class="btn btn-primary my-2" href="./index.html">Cancel</a>
+        <button class="btn btn-primary my-2" type="submit" id="upload">
           Save
         </button>
       </div>
     </main>
-    <footer class="footer bg-dark text-light">
+    <!-- Footer -->
+    <footer class="footer">
       <div class="container text-center">
         <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
       </div>
@@ -209,14 +213,14 @@
         document.getElementById("description").value = quill.root.innerHTML;
       });
     </script>
-    <script type="module" src="./js/firebase.js"></script>
-    <!-- Bootstrap version 5.3.2-->
     <script src="./js/app.js"></script>
+    <!-- Bootstrap version 5.3.2-->
     <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-      crossorigin="anonymous"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"
     ></script>
+    <script type="module" src="./js/firebase.js"></script>
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
       import {

@@ -1,10 +1,7 @@
 /* Fonts
 - Montserrat: 400, 500, 600 
 - Prata: 400 */
-
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Prata&display=swap");
-
-
 /* Basic Css  */
 html {
   scroll-behavior: smooth;
@@ -22,8 +19,6 @@ html {
 main{
   margin-top: 100px;
 }
-
-
 input,
 textarea,
 select {
@@ -64,13 +59,16 @@ h4 {
 nav{
   background-color: 	#161616;
 }
-/* Index Page */
-.main-container{
-margin-top:100px;
-max-height:200vh;
-overflow-y:scroll;
+.navbar-brand{
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: 1.7rem;
+  color: #555;
+font-weight: 400;
 }
-
+.navbar-brand:hover{
+  color: #1a5702;
+  transition: .4s;
+}
 ::-webkit-scrollbar {
   width: 12px;
 }
@@ -85,7 +83,7 @@ overflow-y:scroll;
 }
 
 
-
+/* Spinner */
 .spinner-container {
     display: none;
     position: fixed;
@@ -94,11 +92,9 @@ overflow-y:scroll;
     transform: translate(-50%, -50%);
     z-index: 99999;
   }
-  
   .spinner-container.show {
     display: block;
   }
-
   .search-btn, .close-btn {
     width: 40px;
     height: 40px;

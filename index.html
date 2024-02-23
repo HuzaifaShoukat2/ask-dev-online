@@ -17,6 +17,7 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <!-- Bootstrap Icons -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -25,37 +26,39 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <nav class="navbar fixed fixed-top"  data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg fixed-top" >
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" />
-        </a>
-       
-        <a href="./ask_ques.html" class="btn btn-outline-success ms-auto mx-1"
-          >Ask Question</a
-        >
-       
-        <div class="search mx-3">
-          <input type="text" class="search-box" placeholder="Search..." id="searchInput">
-          <button class="search-btn"><i  class="bi bi-search"></i></button>
-          <button class="close-btn"  id="search"><i class="bi bi-x"></i></button>
-        </div>
-       
-        <div class="action me-5">
-          <div class="profile border" onclick="menuToggle();">
-            <img id="profile" />
+        <a class="navbar-brand">
+          <img src="./assets/icon/web_logo.png" alt="Bootstrap" width="50" /> Ask Devs</a>
+       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">     
+            <div class="search ms-auto d-flex ">
+              <input type="text" class="search-box" placeholder="Search..." id="searchInput">
+              <button class="search-btn"><i  class="bi bi-search"></i></button>
+              <button class="close-btn"  id="search"><i class="bi bi-x"></i></button>
+            </div>           
           </div>
-          <div class="menu">
-            <h3 id="emailText"></h3>
-            <ul>
-              <li>
-                <a href="#" id="logoutBtn"
-                  ><i class="bi bi-box-arrow-right"></i>Logout</a
-                >
-              </li>
-            </ul>
+          <a class="btn btn-outline-success mx-2 askBtn d-block" href="./ask_ques.html">Ask Question</a>
+          <!-- For Authentication -->
+          <a class="btn btn-outline-success mx-2 askBtnSignIn d-none" href="./sign_in.html">Ask Question</a>
+          <a class="btn btn-outline-success me-2 signinBtn" href="./sign_in.html">Sign In</a>
+          <div class="action me-5 d-none profileMenu">
+            <div class="profile border" onclick="menuToggle();">
+              <img id="profile" />
+            </div>
+            <div class="menu">
+              <h3 id="emailText"></h3>
+              <ul>
+                <li>
+                  <a href="#" id="logoutBtn"
+                    ><i class="bi bi-box-arrow-right"></i>Logout</a
+                  >
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
       </div>
     </nav>
     <!-- Main -->
@@ -68,7 +71,7 @@
       <h3 id="noMatchMessage" class="text-center mt-3" style="display: none;">No match found.</h3>
     </div>
     </main>
-
+<!-- Footer -->
     <footer class="footer">
       <div class="container text-center">
         <p>&copy; 2024. All rights reserved By Huzaifa Shoukat.</p>
@@ -241,9 +244,8 @@ function formatDateTime(timestamp) {
     return `${seconds} ${seconds === 1 ? 'second' : 'seconds'} ago`;
   }
 }
-
-
 </script>
+<!-- Search Box -->
 <script>
   const searchBox = document.querySelector('.search-box');
   const searchBtn = document.querySelector('.search-btn');

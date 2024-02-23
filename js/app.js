@@ -1,5 +1,4 @@
 
-  
 document.addEventListener("DOMContentLoaded", function () {
   const switchSignin = document.querySelector(".switchSignin");
   const switchSignUp = document.querySelector(".switchSignup");
@@ -15,9 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   switchSignUp && switchSignUp.addEventListener("click", switchSignup);
   switchSignin && switchSignin.addEventListener("click", switchSigIn);
-
-  
- 
 });
 
 function menuToggle() {

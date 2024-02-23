@@ -29,7 +29,6 @@ const firebaseConfig = {
 // // Initializing Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
-// const db = getFirestore(app);
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 // // Getting NEccessory ID`s From html Pages
@@ -48,6 +47,10 @@ const onLoad = () => {
     
     // Execute the logic only if the user is logged in and not on the sign-in page
     if (user && !isSignInPage) {
+      document.querySelector(".profileMenu").classList.remove("d-none");
+      document.querySelector(".profileMenu").classList.add("d-block");
+      document.querySelector(".signinBtn").classList.add("d-none");
+      document.querySelector(".signinBtn").classList.remove("d-block");
       emailText && (emailText.innerHTML = user.email || user.displayName);
       if (!user.photoURL) {
         profile && (profile.src = "./assets/images/profile-dummy.avif");
@@ -55,9 +58,13 @@ const onLoad = () => {
         profile && (profile.src = user.photoURL);
       }
     } else if (!user && !isSignInPage) {
-      // Redirect to the sign-in page if the user is not logged in and not on the sign-in page
-      window.location.href = 'sign_in.html';
       alert('Sign In First To Continue:');
+
+      document.querySelector(".askBtn").classList.remove("d-block");
+      document.querySelector(".askBtnSignIn").classList.remove("d-none");
+      document.querySelector(".askBtn").classList.add("d-none");
+      document.querySelector(".askBtnSignIn").classList.add("d-block");
+    
     }
   });
 };
