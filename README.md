@@ -1,6 +1,7 @@
 # Ask-Devs-Online
 
 Welcome to Ask Devs Online App, an online platform for developers to share knowledge, ask questions, and engage with the coding community. This app is built using Firebase for backend services, and it utilizes JavaScript, HTML, CSS, and Bootstrap for the frontend.
+-For Live Preview(https://huzaifashoukat2.github.io/ask-dev-online/)..
 
 ## Features
 
